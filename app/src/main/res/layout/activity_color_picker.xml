@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!-- The main content view -->
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:orientation="vertical">
+	
+	    <RelativeLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="0dp"
+	        android:layout_weight="1"
+	        android:padding="16dp" >
+		    
+		    <le.colorpicker.ColorPicker
+		        android:id="@id/colorpicker"
+	    		android:layout_height="match_parent"
+	    		android:layout_width="match_parent"
+	        	android:layout_alignParentTop="true"/>
+		    
+		    <le.colorpicker.ValueBar
+		        android:id="@id/valuebar"
+		        android:layout_below="@id/colorpicker"
+			    android:layout_height="wrap_content"
+			    android:layout_width="match_parent"/>
+		    
+		    <le.colorpicker.SaturationBar
+			    android:id="@id/saturationbar"
+			    android:layout_below="@id/valuebar"
+			    android:layout_height="wrap_content"
+			    android:layout_width="match_parent"/>
+		    
+		</RelativeLayout>
+		
+		<LinearLayout
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center"
+	        android:paddingTop="5dp"
+	        android:paddingBottom="20dp"
+	        android:orientation="horizontal" >
+		    <Button
+		        android:id="@id/reb_btn"
+		        android:layout_width="50dp"
+				android:layout_height="50dp"
+				android:layout_marginRight="3dp"
+				android:layout_marginLeft="3dp"
+				android:background="@drawable/red_button"
+				style="?android:attr/buttonBarButtonStyle"/>
+		
+		    <Button
+		        android:id="@id/yellow_btn"
+		        android:layout_width="50dp"
+				android:layout_height="50dp"
+				android:layout_marginRight="3dp"
+				android:layout_marginLeft="3dp"
+				android:background="@drawable/yellow_button"
+				style="?android:attr/buttonBarButtonStyle" />
+		    	    
+		    <Button
+		        android:id="@id/green_btn"
+		        android:layout_width="50dp"
+				android:layout_height="50dp"
+				android:layout_marginRight="3dp"
+				android:layout_marginLeft="3dp"
+				android:background="@drawable/green_button"
+				style="?android:attr/buttonBarButtonStyle" />
+		
+		    <Button
+		        android:id="@id/blue_btn"
+		        android:layout_width="50dp"
+				android:layout_height="50dp"
+				android:layout_marginRight="3dp"
+				android:layout_marginLeft="3dp"
+				android:background="@drawable/blue_button"
+				style="?android:attr/buttonBarButtonStyle" />
+		    
+		    <ImageButton
+		        android:id="@id/color_btn"
+		        android:layout_width="50dp"
+				android:layout_height="50dp"
+				android:layout_marginRight="3dp"
+				android:layout_marginLeft="3dp"
+				android:background="@drawable/color_button_style"
+				android:src="@drawable/color_button"
+				android:contentDescription="@string/imagebtn_desc"/>
+		    	    
+	    </LinearLayout>
+	</LinearLayout>
+
+    <ListView
+        android:id="@+id/left_drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:background="#111"/>
+</android.support.v4.widget.DrawerLayout>

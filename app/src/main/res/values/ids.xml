@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="id" name="listView" />
+    
+    <item type="id" name="colorpicker" />
+    <item type="id" name="valuebar"/>
+    <item type="id" name="saturationbar" />
+    
+    <item type="id" name="reb_btn" />
+    <item type="id" name="yellow_btn" />
+    <item type="id" name="green_btn" />
+    <item type="id" name="blue_btn" />
+    <item type="id" name="color_btn" />
+    
+    <item type="id" name="icon" />
+    <item type="id" name="title" />
+    <item type="id" name="copy" />
+    <item type="id" name="vers" />
+    <item type="id" name="text" />
+    
+    
+    <item type="id" name="device_name"/>
+    <item type="id" name="device_address"/>
+    <item type="id" name="menu_refresh"/>
+    <item type="id" name="menu_scan"/>
+    <item type="id" name="menu_stop"/>
+</resources>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Strings related to activity title -->
+    <string name="application_name">Smart Lamp LE</string>
+    <string name="title_activity_bluetooth">Bluetooth Devices</string>
+    <string name="title_activity_settings">Settings</string>
+    
+    <!-- Strings related to menu -->
+	<string-array name="menu_item_list">
+        <item >Connect</item>
+        <item >Disconnect</item>
+        <item >Setting</item>
+    </string-array>
+	
+	<!-- Strings related to main button -->
+	<string name="imagebtn_desc">Auto change</string>
+
+    <!-- Strings related to Settings -->
+    <!-- Strings related Auto change settings -->
+    <string name="pref_header_autochange">Auto change</string>
+    <string name="pref_title_autochange">Color auto change with</string>
+    <string name="pref_description_vary_enabled">Color variation</string>
+    <string name="pref_description_fade_enabled">Color fade</string>
+    <!--string name="pref_title_color_vary">Color variation</string>
+    <string name="pref_description_color_vary">to auto change color variatively</string>
+    <string name="pref_title_color_fade">Color fade</string>
+    <string name="pref_description_color_fade">to auto change color fadedly</string-->
+    
+    <!-- Strings related Timer settings -->
+    <string name="pref_header_timer">Timer</string>
+    
+    <string name="pref_title_timer">Fade off after</string>
+    <string-array name="pref_description_timer">
+        <item>Never</item>
+        <item>5 minutes</item>
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hours</item>
+        <item>2 hours</item>
+    </string-array>
+    <string-array name="pref_value_timer">
+        <item>0</item>
+        <item>5</item>
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>120</item>
+    </string-array>
+    
+    <!-- Strings related to About Preference-->
+    <string name="pref_header_about">About</string>
+    <string name="pref_title_about">Smart Lamp LE</string>
+    <string name="pref_description_about">About</string>
+    
+    <!-- Strings related to Information Preference-->
+    <string name="pref_header_info">About</string>
+    <string name="pref_description_copy">Copyright © 2015</string>
+    <string name="pref_title_version">Version</string>
+    <string name="pref_title_firmware">Firmware</string>
+    <string name="pref_title_developer">Developed by</string>
+    <string name="pref_description_developer">Trung Huynh (huynh.trung@outlook.com)</string>
+    <string name="pref_title_producer">Producted by</string>
+    <string name="pref_description_producer">Vu Nguyen</string>
+    <string name="pref_title_license">License</string>
+    <string name="pref_description_license">Licensed under the Apache License, Version 2.0.</string>
+    
+    
+    <!-- String related to BLE -->
+    <string name="ble_not_supported">BLE is not supported</string>
+    <string name="bluetooth_not_supported">Bluetooth is not supported</string>
+    <string name="unknown_device">Unknown device</string>
+    <string name="menu_refresh">Refresh</string>
+    <string name="menu_scan">Scan</string>
+    <string name="menu_stop">Stop</string>
+    
+</resources>

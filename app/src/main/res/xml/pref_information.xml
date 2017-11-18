@@ -1,0 +1,24 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <le.smartlamp.IconPreference
+        android:key="application_name"
+        android:title="@string/application_name" 
+        android:summary="@string/pref_description_copy" />
+    <Preference
+        android:key="version_name"
+        android:title="@string/pref_title_version" />
+    <Preference
+        android:key="firmware_name"
+        android:title="@string/pref_title_firmware" />
+    <Preference
+        android:key="developer"
+        android:title="@string/pref_title_developer"
+        android:summary="@string/pref_description_developer" />
+    <Preference
+        android:key="producer"
+        android:title="@string/pref_title_producer"
+        android:summary="@string/pref_description_producer" />
+    <Preference
+        android:key="library"
+        android:title="@string/pref_title_license"
+        android:summary="@string/pref_description_license" />
+</PreferenceScreen>

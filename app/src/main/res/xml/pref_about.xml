@@ -1,0 +1,9 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <Preference
+        android:key="about"
+        android:title="@string/pref_title_about"
+        android:summary="@string/pref_description_about" />
+    <Preference
+        android:key="firmware"
+        android:title="@string/pref_title_firmware" />
+</PreferenceScreen>

@@ -1,0 +1,21 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+	<!--PreferenceCategory android:title="@string/pref_header_autochange">
+	</PreferenceCategory-->
+    <!--CheckBoxPreference
+        android:title="@string/pref_title_color_vary"
+        android:defaultValue="true"
+        android:key="color_vary_checkbox" 
+        android:summary="@string/pref_description_color_vary" />
+    <CheckBoxPreference
+        android:title="@string/pref_title_color_fade"
+        android:defaultValue="false"
+        android:key="color_fade_checkbox" 
+        android:summary="@string/pref_description_color_fade" /-->
+        
+	<CheckBoxPreference
+        android:title="@string/pref_title_autochange"
+        android:defaultValue="false"
+        android:key="color_fade_checkbox" 
+        android:summaryOff="@string/pref_description_vary_enabled"
+        android:summaryOn="@string/pref_description_fade_enabled" />
+</PreferenceScreen>
