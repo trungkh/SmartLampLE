@@ -64,9 +64,9 @@ public class BluetoothLeService extends Service {
     public final static String ACTION_GATT_CONNECTED = "le.bluetooth.BluetoothLeService.ACTION_GATT_CONNECTED";
     public final static String ACTION_GATT_DISCONNECTED = "le.bluetooth.BluetoothLeService.ACTION_GATT_DISCONNECTED";
     public final static String ACTION_GATT_SERVICES_DISCOVERED = "le.bluetooth.BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED";
-	public final static String ACTION_DATA_READ = "le.bluetooth.BluetoothLeService.ACTION_DATA_READ";
-	public final static String ACTION_DATA_NOTIFY = "le.bluetooth.BluetoothLeService.ACTION_DATA_NOTIFY";
-	public final static String ACTION_DATA_WRITE = "le.bluetooth.BluetoothLeService.ACTION_DATA_WRITE";
+    public final static String ACTION_DATA_READ = "le.bluetooth.BluetoothLeService.ACTION_DATA_READ";
+    public final static String ACTION_DATA_NOTIFY = "le.bluetooth.BluetoothLeService.ACTION_DATA_NOTIFY";
+    public final static String ACTION_DATA_WRITE = "le.bluetooth.BluetoothLeService.ACTION_DATA_WRITE";
     public final static String EXTRA_DATA = "le.bluetooth.BluetoothLeService.EXTRA_DATA";
     
     // Implements callback methods for GATT events that the app cares about.  For example,
@@ -111,10 +111,10 @@ public class BluetoothLeService extends Service {
         }
 
         @Override
-		public void onCharacteristicWrite(BluetoothGatt gatt,
-				BluetoothGattCharacteristic characteristic, int status) {
-			super.onCharacteristicWrite(gatt, characteristic, status);
-		}
+        public void onCharacteristicWrite(BluetoothGatt gatt,
+                BluetoothGattCharacteristic characteristic, int status) {
+            super.onCharacteristicWrite(gatt, characteristic, status);
+        }
         
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt,

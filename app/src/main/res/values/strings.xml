@@ -59,8 +59,6 @@
     <string name="pref_title_firmware">Firmware</string>
     <string name="pref_title_developer">Developed by</string>
     <string name="pref_description_developer">Trung Huynh (huynh.trung@outlook.com)</string>
-    <string name="pref_title_producer">Producted by</string>
-    <string name="pref_description_producer">Vu Nguyen</string>
     <string name="pref_title_license">License</string>
     <string name="pref_description_license">Licensed under the Apache License, Version 2.0.</string>
     

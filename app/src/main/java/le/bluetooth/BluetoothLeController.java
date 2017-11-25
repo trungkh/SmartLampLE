@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Trung Huynh
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package le.bluetooth;
 
 import java.util.List;
@@ -18,28 +34,28 @@ import le.smartlamp.ColorPickerActivity;
 import le.smartlamp.utils.MessageCodes;
 
 public class BluetoothLeController {
-	private final static String TAG = BluetoothLeController.class.getSimpleName();
-	
-	private boolean mConnected = false;
-	
+    private final static String TAG = BluetoothLeController.class.getSimpleName();
+
+    private boolean mConnected = false;
+
     //private String mDeviceName;
-	private String mDeviceAddress;
-	private BluetoothLeService mBluetoothLeService;
-	
+    private String mDeviceAddress;
+    private BluetoothLeService mBluetoothLeService;
+
     private BluetoothGattCharacteristic characteristicTX = null;
     private BluetoothGattCharacteristic characteristicRX = null;
     
-	private OnReceivedDataListener onReceivedListener;
-	
+    private OnReceivedDataListener onReceivedListener;
+
     public interface OnReceivedDataListener{
-    	public void onReceivedData(byte[] bytes);
-    };
-    
+        void onReceivedData(byte[] bytes);
+    }
+
     public void setOnRecievedDataListener(OnReceivedDataListener listener){
-    	onReceivedListener = listener;
+        onReceivedListener = listener;
     }
     
-	private final ServiceConnection mServiceConnection = new ServiceConnection() {
+    private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
             mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
@@ -65,14 +81,14 @@ public class BluetoothLeController {
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 mConnected = false;
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
-            	List<BluetoothGattService> gattServices = mBluetoothLeService.getSupportedGattServices();
-            	
-            	for (BluetoothGattService gattService : gattServices) {
+                List<BluetoothGattService> gattServices = mBluetoothLeService.getSupportedGattServices();
+
+                for (BluetoothGattService gattService : gattServices) {
                     // get characteristic when UUID matches RX/TX UUID
                     characteristicTX = gattService.getCharacteristic(Characteristic.HM10_TRANSMISSION);
                     characteristicRX = gattService.getCharacteristic(Characteristic.HM10_TRANSMISSION);
                     //mBluetoothLeService.setCharacteristicNotification(characteristicRX, true);
-            	}
+                }
 
                 if(characteristicTX != null && characteristicRX != null) {
                     if (ColorPickerActivity.isSentTimer == false) {
@@ -85,56 +101,56 @@ public class BluetoothLeController {
                 }
 
             } else if (BluetoothLeService.ACTION_DATA_NOTIFY.equals(action)) {
-            	byte[] bytes = intent.getByteArrayExtra(BluetoothLeService.EXTRA_DATA);
-            	if(onReceivedListener != null && bytes != null)
-            		onReceivedListener.onReceivedData(bytes);
+                byte[] bytes = intent.getByteArrayExtra(BluetoothLeService.EXTRA_DATA);
+                if(onReceivedListener != null && bytes != null)
+                    onReceivedListener.onReceivedData(bytes);
             } else if (BluetoothLeService.ACTION_DATA_READ.equals(action)) {
-				byte[] bytes = intent.getByteArrayExtra(BluetoothLeService.EXTRA_DATA);
-            	if(onReceivedListener != null && bytes != null)
-            		onReceivedListener.onReceivedData(bytes);
-			}
+                byte[] bytes = intent.getByteArrayExtra(BluetoothLeService.EXTRA_DATA);
+                if(onReceivedListener != null && bytes != null)
+                    onReceivedListener.onReceivedData(bytes);
+            }
         }
     };
     
-	public BluetoothLeController(/*String deviceName,*/ String deviceAddress) {
+    public BluetoothLeController(/*String deviceName,*/ String deviceAddress) {
         //mDeviceName = deviceName;
         mDeviceAddress = deviceAddress;
-	}
-	
+    }
+
     public void bindService(Context context) {
-    	Intent gattServiceIntent = new Intent(context, BluetoothLeService.class);
-    	context.bindService(gattServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
+        Intent gattServiceIntent = new Intent(context, BluetoothLeService.class);
+        context.bindService(gattServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     public void unbindService(Context context) {
-    	context.unbindService(mServiceConnection);
+        context.unbindService(mServiceConnection);
     }
     
-	public boolean connect() {
-		boolean result = false;
-		if (mBluetoothLeService != null)
-			result = mBluetoothLeService.connect(mDeviceAddress);
-		return result;
-	}
-	
-	public void disconnect() {
-		if (mBluetoothLeService != null) {
-			mBluetoothLeService.disconnect();
-			mBluetoothLeService = null;
-		}
-	}
-	
-	public boolean getConnectingState() {
-		return mConnected;
-	}
-	
-	public void registerReceiver(Context context, boolean request) {
-		if (request) 
-			context.registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
-		else
-			context.unregisterReceiver(mGattUpdateReceiver);
-	}
-	
+    public boolean connect() {
+        boolean result = false;
+        if (mBluetoothLeService != null)
+            result = mBluetoothLeService.connect(mDeviceAddress);
+        return result;
+    }
+
+    public void disconnect() {
+        if (mBluetoothLeService != null) {
+            mBluetoothLeService.disconnect();
+            mBluetoothLeService = null;
+        }
+    }
+
+    public boolean getConnectingState() {
+        return mConnected;
+    }
+
+    public void registerReceiver(Context context, boolean request) {
+        if (request)
+            context.registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
+        else
+            context.unregisterReceiver(mGattUpdateReceiver);
+    }
+
     private IntentFilter makeGattUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTED);

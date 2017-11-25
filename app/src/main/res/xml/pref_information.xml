@@ -14,10 +14,6 @@
         android:title="@string/pref_title_developer"
         android:summary="@string/pref_description_developer" />
     <Preference
-        android:key="producer"
-        android:title="@string/pref_title_producer"
-        android:summary="@string/pref_description_producer" />
-    <Preference
         android:key="library"
         android:title="@string/pref_title_license"
         android:summary="@string/pref_description_license" />

@@ -43,177 +43,177 @@ import android.view.View;
  * </p>
  */
 public class ColorPicker extends View {
-	/*
-	 * Constants used to save/restore the instance state.
-	 */
-	private static final String STATE_PARENT = "parent";
-	private static final String STATE_ANGLE = "angle";
-	private static final String STATE_OLD_COLOR = "color";
-	private static final String STATE_SHOW_OLD_COLOR = "showColor";
+    /*
+     * Constants used to save/restore the instance state.
+     */
+    private static final String STATE_PARENT = "parent";
+    private static final String STATE_ANGLE = "angle";
+    private static final String STATE_OLD_COLOR = "color";
+    private static final String STATE_SHOW_OLD_COLOR = "showColor";
 
-	/**
-	 * Colors to construct the color wheel using {@link android.graphics.SweepGradient}.
-	 */
-	private static final int[] COLORS = new int[] { 0xFFFF0000, 0xFFFF00FF,
-			0xFF0000FF, 0xFF00FFFF, 0xFF00FF00, 0xFFFFFF00, 0xFFFF0000 };
+    /**
+     * Colors to construct the color wheel using {@link android.graphics.SweepGradient}.
+     */
+    private static final int[] COLORS = new int[] { 0xFFFF0000, 0xFFFF00FF,
+            0xFF0000FF, 0xFF00FFFF, 0xFF00FF00, 0xFFFFFF00, 0xFFFF0000 };
 
-	/**
-	 * {@code Paint} instance used to draw the color wheel.
-	 */
-	private Paint mColorWheelPaint;
+    /**
+     * {@code Paint} instance used to draw the color wheel.
+     */
+    private Paint mColorWheelPaint;
 
-	/**
-	 * {@code Paint} instance used to draw the pointer's "halo".
-	 */
-	private Paint mPointerHaloPaint;
+    /**
+     * {@code Paint} instance used to draw the pointer's "halo".
+     */
+    private Paint mPointerHaloPaint;
 
-	/**
-	 * {@code Paint} instance used to draw the pointer (the selected color).
-	 */
-	private Paint mPointerColor;
+    /**
+     * {@code Paint} instance used to draw the pointer (the selected color).
+     */
+    private Paint mPointerColor;
 
-	/**
-	 * The width of the color wheel thickness.
-	 */
-	private int mColorWheelThickness;
+    /**
+     * The width of the color wheel thickness.
+     */
+    private int mColorWheelThickness;
 
-	/**
-	 * The radius of the color wheel.
-	 */
-	private int mColorWheelRadius;
-	private int mPreferredColorWheelRadius;
+    /**
+     * The radius of the color wheel.
+     */
+    private int mColorWheelRadius;
+    private int mPreferredColorWheelRadius;
 
-	/**
-	 * The radius of the center circle inside the color wheel.
-	 */
-	private int mColorCenterRadius;
-	private int mPreferredColorCenterRadius;
+    /**
+     * The radius of the center circle inside the color wheel.
+     */
+    private int mColorCenterRadius;
+    private int mPreferredColorCenterRadius;
 
-	/**
-	 * The radius of the halo of the center circle inside the color wheel.
-	 */
-	private int mColorCenterHaloRadius;
-	private int mPreferredColorCenterHaloRadius;
+    /**
+     * The radius of the halo of the center circle inside the color wheel.
+     */
+    private int mColorCenterHaloRadius;
+    private int mPreferredColorCenterHaloRadius;
 
-	/**
-	 * The radius of the pointer.
-	 */
-	private int mColorPointerRadius;
+    /**
+     * The radius of the pointer.
+     */
+    private int mColorPointerRadius;
 
-	/**
-	 * The radius of the halo of the pointer.
-	 */
-	private int mColorPointerHaloRadius;
+    /**
+     * The radius of the halo of the pointer.
+     */
+    private int mColorPointerHaloRadius;
 
-	/**
-	 * The rectangle enclosing the color wheel.
-	 */
-	private RectF mColorWheelRectangle = new RectF();
+    /**
+     * The rectangle enclosing the color wheel.
+     */
+    private RectF mColorWheelRectangle = new RectF();
 
-	/**
-	 * The rectangle enclosing the center inside the color wheel.
-	 */
-	private RectF mCenterRectangle = new RectF();
+    /**
+     * The rectangle enclosing the center inside the color wheel.
+     */
+    private RectF mCenterRectangle = new RectF();
 
-	/**
-	 * {@code true} if the user clicked on the pointer to start the move mode. <br>
-	 * {@code false} once the user stops touching the screen.
-	 * 
-	 * @see #onTouchEvent(android.view.MotionEvent)
-	 */
-	private boolean mUserIsMovingPointer = false;
+    /**
+     * {@code true} if the user clicked on the pointer to start the move mode. <br>
+     * {@code false} once the user stops touching the screen.
+     *
+     * @see #onTouchEvent(android.view.MotionEvent)
+     */
+    private boolean mUserIsMovingPointer = false;
 
-	/**
-	 * The ARGB value of the currently selected color.
-	 */
-	private int mColor;
+    /**
+     * The ARGB value of the currently selected color.
+     */
+    private int mColor;
 
-	/**
-	 * The ARGB value of the center with the old selected color.
-	 */
-	private int mCenterOldColor;
-	
-	/**
-	 * Whether to show the old color in the center or not.
-	 */
-	private boolean mShowCenterOldColor;
+    /**
+     * The ARGB value of the center with the old selected color.
+     */
+    private int mCenterOldColor;
 
-	/**
-	 * The ARGB value of the center with the new selected color.
-	 */
-	private int mCenterNewColor;
+    /**
+     * Whether to show the old color in the center or not.
+     */
+    private boolean mShowCenterOldColor;
 
-	/**
-	 * Number of pixels the origin of this view is moved in X- and Y-direction.
-	 * 
-	 * <p>
-	 * We use the center of this (quadratic) View as origin of our internal
-	 * coordinate system. Android uses the upper left corner as origin for the
-	 * View-specific coordinate system. So this is the value we use to translate
-	 * from one coordinate system to the other.
-	 * </p>
-	 * 
-	 * <p>
-	 * Note: (Re)calculated in {@link #onMeasure(int, int)}.
-	 * </p>
-	 * 
-	 * @see #onDraw(android.graphics.Canvas)
-	 */
-	private float mTranslationOffset;
-	
-	/**
-	 * Distance between pointer and user touch in X-direction.
-	 */
-    	private float mSlopX;
+    /**
+     * The ARGB value of the center with the new selected color.
+     */
+    private int mCenterNewColor;
+
+    /**
+     * Number of pixels the origin of this view is moved in X- and Y-direction.
+     *
+     * <p>
+     * We use the center of this (quadratic) View as origin of our internal
+     * coordinate system. Android uses the upper left corner as origin for the
+     * View-specific coordinate system. So this is the value we use to translate
+     * from one coordinate system to the other.
+     * </p>
+     *
+     * <p>
+     * Note: (Re)calculated in {@link #onMeasure(int, int)}.
+     * </p>
+     *
+     * @see #onDraw(android.graphics.Canvas)
+     */
+    private float mTranslationOffset;
+
+    /**
+     * Distance between pointer and user touch in X-direction.
+     */
+        private float mSlopX;
     
-	/**
-	 * Distance between pointer and user touch in Y-direction.
-	 */
-    	private float mSlopY;
+    /**
+     * Distance between pointer and user touch in Y-direction.
+     */
+        private float mSlopY;
 
-	/**
-	 * The pointer's position expressed as angle (in rad).
-	 */
-	private float mAngle;
+    /**
+     * The pointer's position expressed as angle (in rad).
+     */
+    private float mAngle;
 
-	/**
-	 * {@code Paint} instance used to draw the center with the old selected
-	 * color.
-	 */
-	private Paint mCenterOldPaint;
+    /**
+     * {@code Paint} instance used to draw the center with the old selected
+     * color.
+     */
+    private Paint mCenterOldPaint;
 
-	/**
-	 * {@code Paint} instance used to draw the center with the new selected
-	 * color.
-	 */
-	private Paint mCenterNewPaint;
+    /**
+     * {@code Paint} instance used to draw the center with the new selected
+     * color.
+     */
+    private Paint mCenterNewPaint;
 
-	/**
-	 * {@code Paint} instance used to draw the halo of the center selected
-	 * colors.
-	 */
-	private Paint mCenterHaloPaint;
+    /**
+     * {@code Paint} instance used to draw the halo of the center selected
+     * colors.
+     */
+    private Paint mCenterHaloPaint;
 
-	/**
-	 * An array of floats that can be build into a {@code Color} <br>
-	 * Where we can extract the Saturation and Value from.
-	 */
-	private float[] mHSV = new float[3];
+    /**
+     * An array of floats that can be build into a {@code Color} <br>
+     * Where we can extract the Saturation and Value from.
+     */
+    private float[] mHSV = new float[3];
 
-	/**
-	 * {@code SVBar} instance used to control the Saturation/Value bar.
-	 */
-	private SVBar mSVbar = null;
+    /**
+     * {@code SVBar} instance used to control the Saturation/Value bar.
+     */
+    private SVBar mSVbar = null;
 
-	/**
-	 * {@code OpacityBar} instance used to control the Opacity bar.
-	 */
-	private OpacityBar mOpacityBar = null;
+    /**
+     * {@code OpacityBar} instance used to control the Opacity bar.
+     */
+    private OpacityBar mOpacityBar = null;
 
-	/**
-	 * {@code SaturationBar} instance used to control the Saturation bar.
-	 */
-	private SaturationBar mSaturationBar = null;
+    /**
+     * {@code SaturationBar} instance used to control the Saturation bar.
+     */
+    private SaturationBar mSaturationBar = null;
 
         /**
          * {@code TouchAnywhereOnColorWheelEnabled} instance used to control <br>
@@ -222,660 +222,660 @@ public class ColorPicker extends View {
          */
         private boolean mTouchAnywhereOnColorWheelEnabled = true;
 
-	/**
-	 * {@code ValueBar} instance used to control the Value bar.
-	 */
-	private ValueBar mValueBar = null;
+    /**
+     * {@code ValueBar} instance used to control the Value bar.
+     */
+    private ValueBar mValueBar = null;
 
-	/**
-	 * {@code onColorChangedListener} instance of the onColorChangedListener
-	 */
-	private OnColorChangedListener onColorChangedListener;
+    /**
+     * {@code onColorChangedListener} instance of the onColorChangedListener
+     */
+    private OnColorChangedListener onColorChangedListener;
 
-	/**
-	 * {@code onColorSelectedListener} instance of the onColorSelectedListener
-	 */
-	private OnColorSelectedListener onColorSelectedListener;
+    /**
+     * {@code onColorSelectedListener} instance of the onColorSelectedListener
+     */
+    private OnColorSelectedListener onColorSelectedListener;
 
-	public ColorPicker(Context context) {
-		super(context);
-		init(null, 0);
-	}
+    public ColorPicker(Context context) {
+        super(context);
+        init(null, 0);
+    }
 
-	public ColorPicker(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		init(attrs, 0);
-	}
+    public ColorPicker(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(attrs, 0);
+    }
 
-	public ColorPicker(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		init(attrs, defStyle);
-	}
+    public ColorPicker(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        init(attrs, defStyle);
+    }
 
-	/**
-	 * An interface that is called whenever the color is changed. Currently it
-	 * is always called when the color is changes.
-	 * 
-	 * @author lars
-	 * 
-	 */
-	public interface OnColorChangedListener {
-		public void onColorChanged(int color);
-	}
+    /**
+     * An interface that is called whenever the color is changed. Currently it
+     * is always called when the color is changes.
+     *
+     * @author lars
+     *
+     */
+    public interface OnColorChangedListener {
+        void onColorChanged(int color);
+    }
 
-	/**
-	 * An interface that is called whenever a new color has been selected.
-	 * Currently it is always called when the color wheel has been released.
-	 * 
-	 */
-	public interface OnColorSelectedListener {
-		public void onColorSelected(int color);
-	}
+    /**
+     * An interface that is called whenever a new color has been selected.
+     * Currently it is always called when the color wheel has been released.
+     *
+     */
+    public interface OnColorSelectedListener {
+        void onColorSelected(int color);
+    }
 
-	/**
-	 * Set a onColorChangedListener
-	 * 
-	 * @param listener {@code OnColorChangedListener}
-	 */
-	public void setOnColorChangedListener(OnColorChangedListener listener) {
-		this.onColorChangedListener = listener;
-	}
+    /**
+     * Set a onColorChangedListener
+     *
+     * @param listener {@code OnColorChangedListener}
+     */
+    public void setOnColorChangedListener(OnColorChangedListener listener) {
+        this.onColorChangedListener = listener;
+    }
 
-	/**
-	 * Gets the onColorChangedListener
-	 * 
-	 * @return {@code OnColorChangedListener}
-	 */
-	public OnColorChangedListener getOnColorChangedListener() {
-		return this.onColorChangedListener;
-	}
+    /**
+     * Gets the onColorChangedListener
+     *
+     * @return {@code OnColorChangedListener}
+     */
+    public OnColorChangedListener getOnColorChangedListener() {
+        return this.onColorChangedListener;
+    }
 
-	/**
-	 * Set a onColorSelectedListener
-	 * 
-	 * @param listener {@code OnColorSelectedListener}
-	 */
-	public void setOnColorSelectedListener(OnColorSelectedListener listener) {
-		this.onColorSelectedListener = listener;
-	}
+    /**
+     * Set a onColorSelectedListener
+     *
+     * @param listener {@code OnColorSelectedListener}
+     */
+    public void setOnColorSelectedListener(OnColorSelectedListener listener) {
+        this.onColorSelectedListener = listener;
+    }
 
-	/**
-	 * Gets the onColorSelectedListener
-	 * 
-	 * @return {@code OnColorSelectedListener}
-	 */
-	public OnColorSelectedListener getOnColorSelectedListener() {
-		return this.onColorSelectedListener;
-	}
-	
-	/**
-	 * Color of the latest entry of the onColorChangedListener.
-	 */
-	private int oldChangedListenerColor;
-	
-	/**
-	 * Color of the latest entry of the onColorSelectedListener.
-	 */
-	private int oldSelectedListenerColor;
+    /**
+     * Gets the onColorSelectedListener
+     *
+     * @return {@code OnColorSelectedListener}
+     */
+    public OnColorSelectedListener getOnColorSelectedListener() {
+        return this.onColorSelectedListener;
+    }
 
-	private void init(AttributeSet attrs, int defStyle) {
-		final TypedArray a = getContext().obtainStyledAttributes(attrs,
-				R.styleable.ColorPicker, defStyle, 0);
-		final Resources b = getContext().getResources();
+    /**
+     * Color of the latest entry of the onColorChangedListener.
+     */
+    private int oldChangedListenerColor;
 
-		mColorWheelThickness = a.getDimensionPixelSize(
-				R.styleable.ColorPicker_color_wheel_thickness,
-				b.getDimensionPixelSize(R.dimen.color_wheel_thickness));
-		mColorWheelRadius = a.getDimensionPixelSize(
-				R.styleable.ColorPicker_color_wheel_radius,
-				b.getDimensionPixelSize(R.dimen.color_wheel_radius));
-		mPreferredColorWheelRadius = mColorWheelRadius;
-		mColorCenterRadius = a.getDimensionPixelSize(
-				R.styleable.ColorPicker_color_center_radius,
-				b.getDimensionPixelSize(R.dimen.color_center_radius));
-		mPreferredColorCenterRadius = mColorCenterRadius;
-		mColorCenterHaloRadius = a.getDimensionPixelSize(
-				R.styleable.ColorPicker_color_center_halo_radius,
-				b.getDimensionPixelSize(R.dimen.color_center_halo_radius));
-		mPreferredColorCenterHaloRadius = mColorCenterHaloRadius;
-		mColorPointerRadius = a.getDimensionPixelSize(
-				R.styleable.ColorPicker_color_pointer_radius,
-				b.getDimensionPixelSize(R.dimen.color_pointer_radius));
-		mColorPointerHaloRadius = a.getDimensionPixelSize(
-				R.styleable.ColorPicker_color_pointer_halo_radius,
-				b.getDimensionPixelSize(R.dimen.color_pointer_halo_radius));
+    /**
+     * Color of the latest entry of the onColorSelectedListener.
+     */
+    private int oldSelectedListenerColor;
 
-		a.recycle();
+    private void init(AttributeSet attrs, int defStyle) {
+        final TypedArray a = getContext().obtainStyledAttributes(attrs,
+                R.styleable.ColorPicker, defStyle, 0);
+        final Resources b = getContext().getResources();
 
-		mAngle = (float) (-Math.PI / 2);
+        mColorWheelThickness = a.getDimensionPixelSize(
+                R.styleable.ColorPicker_color_wheel_thickness,
+                b.getDimensionPixelSize(R.dimen.color_wheel_thickness));
+        mColorWheelRadius = a.getDimensionPixelSize(
+                R.styleable.ColorPicker_color_wheel_radius,
+                b.getDimensionPixelSize(R.dimen.color_wheel_radius));
+        mPreferredColorWheelRadius = mColorWheelRadius;
+        mColorCenterRadius = a.getDimensionPixelSize(
+                R.styleable.ColorPicker_color_center_radius,
+                b.getDimensionPixelSize(R.dimen.color_center_radius));
+        mPreferredColorCenterRadius = mColorCenterRadius;
+        mColorCenterHaloRadius = a.getDimensionPixelSize(
+                R.styleable.ColorPicker_color_center_halo_radius,
+                b.getDimensionPixelSize(R.dimen.color_center_halo_radius));
+        mPreferredColorCenterHaloRadius = mColorCenterHaloRadius;
+        mColorPointerRadius = a.getDimensionPixelSize(
+                R.styleable.ColorPicker_color_pointer_radius,
+                b.getDimensionPixelSize(R.dimen.color_pointer_radius));
+        mColorPointerHaloRadius = a.getDimensionPixelSize(
+                R.styleable.ColorPicker_color_pointer_halo_radius,
+                b.getDimensionPixelSize(R.dimen.color_pointer_halo_radius));
 
-		Shader s = new SweepGradient(0, 0, COLORS, null);
+        a.recycle();
 
-		mColorWheelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mColorWheelPaint.setShader(s);
-		mColorWheelPaint.setStyle(Paint.Style.STROKE);
-		mColorWheelPaint.setStrokeWidth(mColorWheelThickness);
+        mAngle = (float) (-Math.PI / 2);
 
-		mPointerHaloPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mPointerHaloPaint.setColor(Color.BLACK);
-		mPointerHaloPaint.setAlpha(0x50);
+        Shader s = new SweepGradient(0, 0, COLORS, null);
 
-		mPointerColor = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mPointerColor.setColor(calculateColor(mAngle));
+        mColorWheelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mColorWheelPaint.setShader(s);
+        mColorWheelPaint.setStyle(Paint.Style.STROKE);
+        mColorWheelPaint.setStrokeWidth(mColorWheelThickness);
 
-		mCenterNewPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mCenterNewPaint.setColor(calculateColor(mAngle));
-		mCenterNewPaint.setStyle(Paint.Style.FILL);
+        mPointerHaloPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPointerHaloPaint.setColor(Color.BLACK);
+        mPointerHaloPaint.setAlpha(0x50);
 
-		mCenterOldPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mCenterOldPaint.setColor(calculateColor(mAngle));
-		mCenterOldPaint.setStyle(Paint.Style.FILL);
+        mPointerColor = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPointerColor.setColor(calculateColor(mAngle));
 
-		mCenterHaloPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mCenterHaloPaint.setColor(Color.BLACK);
-		mCenterHaloPaint.setAlpha(0x00);
-		
-		mCenterNewColor = calculateColor(mAngle);
-		mCenterOldColor = calculateColor(mAngle);
-		mShowCenterOldColor = true;
-	}
+        mCenterNewPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mCenterNewPaint.setColor(calculateColor(mAngle));
+        mCenterNewPaint.setStyle(Paint.Style.FILL);
 
-	@Override
-	protected void onDraw(Canvas canvas) {
-		// All of our positions are using our internal coordinate system.
-		// Instead of translating
-		// them we let Canvas do the work for us.
-		canvas.translate(mTranslationOffset, mTranslationOffset);
+        mCenterOldPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mCenterOldPaint.setColor(calculateColor(mAngle));
+        mCenterOldPaint.setStyle(Paint.Style.FILL);
 
-		// Draw the color wheel.
-		canvas.drawOval(mColorWheelRectangle, mColorWheelPaint);
+        mCenterHaloPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mCenterHaloPaint.setColor(Color.BLACK);
+        mCenterHaloPaint.setAlpha(0x00);
 
-		float[] pointerPosition = calculatePointerPosition(mAngle);
+        mCenterNewColor = calculateColor(mAngle);
+        mCenterOldColor = calculateColor(mAngle);
+        mShowCenterOldColor = true;
+    }
 
-		// Draw the pointer's "halo"
-		canvas.drawCircle(pointerPosition[0], pointerPosition[1],
-				mColorPointerHaloRadius, mPointerHaloPaint);
+    @Override
+    protected void onDraw(Canvas canvas) {
+        // All of our positions are using our internal coordinate system.
+        // Instead of translating
+        // them we let Canvas do the work for us.
+        canvas.translate(mTranslationOffset, mTranslationOffset);
 
-		// Draw the pointer (the currently selected color) slightly smaller on
-		// top.
-		canvas.drawCircle(pointerPosition[0], pointerPosition[1],
-				mColorPointerRadius, mPointerColor);
+        // Draw the color wheel.
+        canvas.drawOval(mColorWheelRectangle, mColorWheelPaint);
 
-		// Draw the halo of the center colors.
-		canvas.drawCircle(0, 0, mColorCenterHaloRadius, mCenterHaloPaint);
-		
-		if (mShowCenterOldColor) {
-			// Draw the old selected color in the center.
-			canvas.drawArc(mCenterRectangle, 90, 180, true, mCenterOldPaint);
+        float[] pointerPosition = calculatePointerPosition(mAngle);
 
-			// Draw the new selected color in the center.
-			canvas.drawArc(mCenterRectangle, 270, 180, true, mCenterNewPaint);
-		}
-		else {
-			// Draw the new selected color in the center.
-			canvas.drawArc(mCenterRectangle, 0, 360, true, mCenterNewPaint);
-		}
-	}
+        // Draw the pointer's "halo"
+        canvas.drawCircle(pointerPosition[0], pointerPosition[1],
+                mColorPointerHaloRadius, mPointerHaloPaint);
 
-	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		final int intrinsicSize = 2 * (mPreferredColorWheelRadius + mColorPointerHaloRadius);
+        // Draw the pointer (the currently selected color) slightly smaller on
+        // top.
+        canvas.drawCircle(pointerPosition[0], pointerPosition[1],
+                mColorPointerRadius, mPointerColor);
 
-		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-		int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-		int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-		int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+        // Draw the halo of the center colors.
+        canvas.drawCircle(0, 0, mColorCenterHaloRadius, mCenterHaloPaint);
 
-		int width;
-		int height;
+        if (mShowCenterOldColor) {
+            // Draw the old selected color in the center.
+            canvas.drawArc(mCenterRectangle, 90, 180, true, mCenterOldPaint);
 
-		if (widthMode == MeasureSpec.EXACTLY) {
-			width = widthSize;
-		} else if (widthMode == MeasureSpec.AT_MOST) {
-			width = Math.min(intrinsicSize, widthSize);
-		} else {
-			width = intrinsicSize;
-		}
+            // Draw the new selected color in the center.
+            canvas.drawArc(mCenterRectangle, 270, 180, true, mCenterNewPaint);
+        }
+        else {
+            // Draw the new selected color in the center.
+            canvas.drawArc(mCenterRectangle, 0, 360, true, mCenterNewPaint);
+        }
+    }
 
-		if (heightMode == MeasureSpec.EXACTLY) {
-			height = heightSize;
-		} else if (heightMode == MeasureSpec.AT_MOST) {
-			height = Math.min(intrinsicSize, heightSize);
-		} else {
-			height = intrinsicSize;
-		}
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        final int intrinsicSize = 2 * (mPreferredColorWheelRadius + mColorPointerHaloRadius);
 
-		int min = Math.min(width, height);
-		setMeasuredDimension(min, min);
-		mTranslationOffset = min * 0.5f;
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 
-		// fill the rectangle instances.
-		mColorWheelRadius = min / 2 - mColorWheelThickness - mColorPointerHaloRadius;
-		mColorWheelRectangle.set(-mColorWheelRadius, -mColorWheelRadius,
-				mColorWheelRadius, mColorWheelRadius);
+        int width;
+        int height;
 
-		mColorCenterRadius = (int) ((float) mPreferredColorCenterRadius * ((float) mColorWheelRadius / (float) mPreferredColorWheelRadius));
-		mColorCenterHaloRadius = (int) ((float) mPreferredColorCenterHaloRadius * ((float) mColorWheelRadius / (float) mPreferredColorWheelRadius));
-		mCenterRectangle.set(-mColorCenterRadius, -mColorCenterRadius,
-				mColorCenterRadius, mColorCenterRadius);
-	}
+        if (widthMode == MeasureSpec.EXACTLY) {
+            width = widthSize;
+        } else if (widthMode == MeasureSpec.AT_MOST) {
+            width = Math.min(intrinsicSize, widthSize);
+        } else {
+            width = intrinsicSize;
+        }
 
-	private int ave(int s, int d, float p) {
-		return s + Math.round(p * (d - s));
-	}
+        if (heightMode == MeasureSpec.EXACTLY) {
+            height = heightSize;
+        } else if (heightMode == MeasureSpec.AT_MOST) {
+            height = Math.min(intrinsicSize, heightSize);
+        } else {
+            height = intrinsicSize;
+        }
 
-	/**
-	 * Calculate the color using the supplied angle.
-	 * 
-	 * @param angle The selected color's position expressed as angle (in rad).
-	 * 
-	 * @return The ARGB value of the color on the color wheel at the specified
-	 *         angle.
-	 */
-	private int calculateColor(float angle) {
-		float unit = (float) (angle / (2 * Math.PI));
-		if (unit < 0) {
-			unit += 1;
-		}
+        int min = Math.min(width, height);
+        setMeasuredDimension(min, min);
+        mTranslationOffset = min * 0.5f;
 
-		if (unit <= 0) {
-			mColor = COLORS[0];
-			return COLORS[0];
-		}
-		if (unit >= 1) {
-			mColor = COLORS[COLORS.length - 1];
-			return COLORS[COLORS.length - 1];
-		}
+        // fill the rectangle instances.
+        mColorWheelRadius = min / 2 - mColorWheelThickness - mColorPointerHaloRadius;
+        mColorWheelRectangle.set(-mColorWheelRadius, -mColorWheelRadius,
+                mColorWheelRadius, mColorWheelRadius);
 
-		float p = unit * (COLORS.length - 1);
-		int i = (int) p;
-		p -= i;
+        mColorCenterRadius = (int) ((float) mPreferredColorCenterRadius * ((float) mColorWheelRadius / (float) mPreferredColorWheelRadius));
+        mColorCenterHaloRadius = (int) ((float) mPreferredColorCenterHaloRadius * ((float) mColorWheelRadius / (float) mPreferredColorWheelRadius));
+        mCenterRectangle.set(-mColorCenterRadius, -mColorCenterRadius,
+                mColorCenterRadius, mColorCenterRadius);
+    }
 
-		int c0 = COLORS[i];
-		int c1 = COLORS[i + 1];
-		int a = ave(Color.alpha(c0), Color.alpha(c1), p);
-		int r = ave(Color.red(c0), Color.red(c1), p);
-		int g = ave(Color.green(c0), Color.green(c1), p);
-		int b = ave(Color.blue(c0), Color.blue(c1), p);
+    private int ave(int s, int d, float p) {
+        return s + Math.round(p * (d - s));
+    }
 
-		mColor = Color.argb(a, r, g, b);
-		return Color.argb(a, r, g, b);
-	}
+    /**
+     * Calculate the color using the supplied angle.
+     *
+     * @param angle The selected color's position expressed as angle (in rad).
+     *
+     * @return The ARGB value of the color on the color wheel at the specified
+     *         angle.
+     */
+    private int calculateColor(float angle) {
+        float unit = (float) (angle / (2 * Math.PI));
+        if (unit < 0) {
+            unit += 1;
+        }
 
-	/**
-	 * Get the currently selected color.
-	 * 
-	 * @return The ARGB value of the currently selected color.
-	 */
-	public int getColor() {
-		return mCenterNewColor;
-	}
+        if (unit <= 0) {
+            mColor = COLORS[0];
+            return COLORS[0];
+        }
+        if (unit >= 1) {
+            mColor = COLORS[COLORS.length - 1];
+            return COLORS[COLORS.length - 1];
+        }
 
-	/**
-	 * Set the color to be highlighted by the pointer. If the
-	 * instances {@code SVBar} and the {@code OpacityBar} aren't null the color
-	 * will also be set to them
-	 * 
-	 * @param color The RGB value of the color to highlight. If this is not a
-	 *            color displayed on the color wheel a very simple algorithm is
-	 *            used to map it to the color wheel. The resulting color often
-	 *            won't look close to the original color. This is especially
-	 *            true for shades of grey. You have been warned!
-	 */
-	public void setColor(int color) {
-		mAngle = colorToAngle(color);
-		mPointerColor.setColor(calculateColor(mAngle));
+        float p = unit * (COLORS.length - 1);
+        int i = (int) p;
+        p -= i;
 
-		// check of the instance isn't null
-		if (mOpacityBar != null) {
-			// set the value of the opacity
-			mOpacityBar.setColor(mColor);
-			mOpacityBar.setOpacity(Color.alpha(color));
-		}
+        int c0 = COLORS[i];
+        int c1 = COLORS[i + 1];
+        int a = ave(Color.alpha(c0), Color.alpha(c1), p);
+        int r = ave(Color.red(c0), Color.red(c1), p);
+        int g = ave(Color.green(c0), Color.green(c1), p);
+        int b = ave(Color.blue(c0), Color.blue(c1), p);
 
-		// check if the instance isn't null
-		if (mSVbar != null) {
-			// the array mHSV will be filled with the HSV values of the color.
-			Color.colorToHSV(color, mHSV);
-			mSVbar.setColor(mColor);
+        mColor = Color.argb(a, r, g, b);
+        return Color.argb(a, r, g, b);
+    }
 
-			// because of the design of the Saturation/Value bar,
-			// we can only use Saturation or Value every time.
-			// Here will be checked which we shall use.
-			if (mHSV[1] < mHSV[2]) {
-				mSVbar.setSaturation(mHSV[1]);
-			} else if(mHSV[1] > mHSV[2]){
-				mSVbar.setValue(mHSV[2]);
-			}
-		}
+    /**
+     * Get the currently selected color.
+     *
+     * @return The ARGB value of the currently selected color.
+     */
+    public int getColor() {
+        return mCenterNewColor;
+    }
 
-		if (mSaturationBar != null) {
-			Color.colorToHSV(color, mHSV);
-			mSaturationBar.setColor(mColor);
-			mSaturationBar.setSaturation(mHSV[1]);
-		}
+    /**
+     * Set the color to be highlighted by the pointer. If the
+     * instances {@code SVBar} and the {@code OpacityBar} aren't null the color
+     * will also be set to them
+     *
+     * @param color The RGB value of the color to highlight. If this is not a
+     *            color displayed on the color wheel a very simple algorithm is
+     *            used to map it to the color wheel. The resulting color often
+     *            won't look close to the original color. This is especially
+     *            true for shades of grey. You have been warned!
+     */
+    public void setColor(int color) {
+        mAngle = colorToAngle(color);
+        mPointerColor.setColor(calculateColor(mAngle));
 
-		if (mValueBar != null) {
-			if (mSaturationBar == null) {
-				Color.colorToHSV(color, mHSV);
-				mValueBar.setColor(mColor);
-				mValueBar.setValue(mHSV[2]);
-			} else {
-				Color.colorToHSV(color, mHSV);
-				mValueBar.setValue(mHSV[2]);
-			}
-		}
+        // check of the instance isn't null
+        if (mOpacityBar != null) {
+            // set the value of the opacity
+            mOpacityBar.setColor(mColor);
+            mOpacityBar.setOpacity(Color.alpha(color));
+        }
+
+        // check if the instance isn't null
+        if (mSVbar != null) {
+            // the array mHSV will be filled with the HSV values of the color.
+            Color.colorToHSV(color, mHSV);
+            mSVbar.setColor(mColor);
+
+            // because of the design of the Saturation/Value bar,
+            // we can only use Saturation or Value every time.
+            // Here will be checked which we shall use.
+            if (mHSV[1] < mHSV[2]) {
+                mSVbar.setSaturation(mHSV[1]);
+            } else if(mHSV[1] > mHSV[2]){
+                mSVbar.setValue(mHSV[2]);
+            }
+        }
+
+        if (mSaturationBar != null) {
+            Color.colorToHSV(color, mHSV);
+            mSaturationBar.setColor(mColor);
+            mSaturationBar.setSaturation(mHSV[1]);
+        }
+
+        if (mValueBar != null) {
+            if (mSaturationBar == null) {
+                Color.colorToHSV(color, mHSV);
+                mValueBar.setColor(mColor);
+                mValueBar.setValue(mHSV[2]);
+            } else {
+                Color.colorToHSV(color, mHSV);
+                mValueBar.setValue(mHSV[2]);
+            }
+        }
         setNewCenterColor(color);
-	}
+    }
 
-	/**
-	 * Convert a color to an angle.
-	 * 
-	 * @param color The RGB value of the color to "find" on the color wheel.
-	 * 
-	 * @return The angle (in rad) the "normalized" color is displayed on the
-	 *         color wheel.
-	 */
-	private float colorToAngle(int color) {
-		float[] colors = new float[3];
-		Color.colorToHSV(color, colors);
-		
-		return (float) Math.toRadians(-colors[0]);
-	}
+    /**
+     * Convert a color to an angle.
+     *
+     * @param color The RGB value of the color to "find" on the color wheel.
+     *
+     * @return The angle (in rad) the "normalized" color is displayed on the
+     *         color wheel.
+     */
+    private float colorToAngle(int color) {
+        float[] colors = new float[3];
+        Color.colorToHSV(color, colors);
 
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		getParent().requestDisallowInterceptTouchEvent(true);
+        return (float) Math.toRadians(-colors[0]);
+    }
 
-		// Convert coordinates to our internal coordinate system
-		float x = event.getX() - mTranslationOffset;
-		float y = event.getY() - mTranslationOffset;
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        getParent().requestDisallowInterceptTouchEvent(true);
 
-		switch (event.getAction()) {
-		case MotionEvent.ACTION_DOWN:
-			// Check whether the user pressed on the pointer.
-			float[] pointerPosition = calculatePointerPosition(mAngle);
-			if (x >= (pointerPosition[0] - mColorPointerHaloRadius)
-					&& x <= (pointerPosition[0] + mColorPointerHaloRadius)
-					&& y >= (pointerPosition[1] - mColorPointerHaloRadius)
-					&& y <= (pointerPosition[1] + mColorPointerHaloRadius)) {
-				mSlopX = x - pointerPosition[0];
-				mSlopY = y - pointerPosition[1];
-				mUserIsMovingPointer = true;
-				invalidate();
-			}
-			// Check whether the user pressed on the center.
-			else if (x >= -mColorCenterRadius && x <= mColorCenterRadius
-					&& y >= -mColorCenterRadius && y <= mColorCenterRadius
-					&& mShowCenterOldColor) {
-				mCenterHaloPaint.setAlpha(0x50);
-				setColor(getOldCenterColor());
-				invalidate();
-			}
-			// Check whether the user pressed anywhere on the wheel.
-			else if (Math.sqrt(x*x + y*y)  <= mColorWheelRadius + mColorPointerHaloRadius
-					&& Math.sqrt(x*x + y*y) >= mColorWheelRadius - mColorPointerHaloRadius
-					&& mTouchAnywhereOnColorWheelEnabled) {
-				mUserIsMovingPointer = true;
-				invalidate();
-			}
-			// If user did not press pointer or center, report event not handled
-			else{
-				getParent().requestDisallowInterceptTouchEvent(false);
-				return false;
-			}
-			break;
-		case MotionEvent.ACTION_MOVE:
-			if (mUserIsMovingPointer) {
-				mAngle = (float) Math.atan2(y - mSlopY, x - mSlopX);
-				mPointerColor.setColor(calculateColor(mAngle));
+        // Convert coordinates to our internal coordinate system
+        float x = event.getX() - mTranslationOffset;
+        float y = event.getY() - mTranslationOffset;
 
-				mCenterNewColor = calculateColor(mAngle);
-				//setNewCenterColor(mCenterNewColor);
-				
-				if (mOpacityBar != null) {
-					mOpacityBar.setColor(mColor);
-				}
+        switch (event.getAction()) {
+        case MotionEvent.ACTION_DOWN:
+            // Check whether the user pressed on the pointer.
+            float[] pointerPosition = calculatePointerPosition(mAngle);
+            if (x >= (pointerPosition[0] - mColorPointerHaloRadius)
+                    && x <= (pointerPosition[0] + mColorPointerHaloRadius)
+                    && y >= (pointerPosition[1] - mColorPointerHaloRadius)
+                    && y <= (pointerPosition[1] + mColorPointerHaloRadius)) {
+                mSlopX = x - pointerPosition[0];
+                mSlopY = y - pointerPosition[1];
+                mUserIsMovingPointer = true;
+                invalidate();
+            }
+            // Check whether the user pressed on the center.
+            else if (x >= -mColorCenterRadius && x <= mColorCenterRadius
+                    && y >= -mColorCenterRadius && y <= mColorCenterRadius
+                    && mShowCenterOldColor) {
+                mCenterHaloPaint.setAlpha(0x50);
+                setColor(getOldCenterColor());
+                invalidate();
+            }
+            // Check whether the user pressed anywhere on the wheel.
+            else if (Math.sqrt(x*x + y*y)  <= mColorWheelRadius + mColorPointerHaloRadius
+                    && Math.sqrt(x*x + y*y) >= mColorWheelRadius - mColorPointerHaloRadius
+                    && mTouchAnywhereOnColorWheelEnabled) {
+                mUserIsMovingPointer = true;
+                invalidate();
+            }
+            // If user did not press pointer or center, report event not handled
+            else{
+                getParent().requestDisallowInterceptTouchEvent(false);
+                return false;
+            }
+            break;
+        case MotionEvent.ACTION_MOVE:
+            if (mUserIsMovingPointer) {
+                mAngle = (float) Math.atan2(y - mSlopY, x - mSlopX);
+                mPointerColor.setColor(calculateColor(mAngle));
 
-				if (mValueBar != null) {
-					//mValueBar.setColor(mColor);
-				}
+                mCenterNewColor = calculateColor(mAngle);
+                //setNewCenterColor(mCenterNewColor);
 
-				if (mSaturationBar != null) {
-					mSaturationBar.setColor(mColor);
-				}
+                if (mOpacityBar != null) {
+                    mOpacityBar.setColor(mColor);
+                }
 
-				if (mSVbar != null) {
-					mSVbar.setColor(mColor);
-				}
+                if (mValueBar != null) {
+                    //mValueBar.setColor(mColor);
+                }
 
-				invalidate();
-			}
-			// If user did not press pointer or center, report event not handled
-			else{
-				getParent().requestDisallowInterceptTouchEvent(false);
-				return false;
-			}
-			break;
-		case MotionEvent.ACTION_UP:
-			mUserIsMovingPointer = false;
-			mCenterHaloPaint.setAlpha(0x00);
-			
-			if (onColorSelectedListener != null && mCenterNewColor != oldSelectedListenerColor) {
-				onColorSelectedListener.onColorSelected(mCenterNewColor);
-				oldSelectedListenerColor = mCenterNewColor;
-			}
+                if (mSaturationBar != null) {
+                    mSaturationBar.setColor(mColor);
+                }
 
-			invalidate();
-			break;
-		case MotionEvent.ACTION_CANCEL:
-			if (onColorSelectedListener != null && mCenterNewColor != oldSelectedListenerColor) {
-				onColorSelectedListener.onColorSelected(mCenterNewColor);
-				oldSelectedListenerColor = mCenterNewColor;
-			}
-			break;
-		}
-		return true;
-	}
+                if (mSVbar != null) {
+                    mSVbar.setColor(mColor);
+                }
 
-	/**
-	 * Calculate the pointer's coordinates on the color wheel using the supplied
-	 * angle.
-	 * 
-	 * @param angle The position of the pointer expressed as angle (in rad).
-	 * 
-	 * @return The coordinates of the pointer's center in our internal
-	 *         coordinate system.
-	 */
-	private float[] calculatePointerPosition(float angle) {
-		float x = (float) (mColorWheelRadius * Math.cos(angle));
-		float y = (float) (mColorWheelRadius * Math.sin(angle));
+                invalidate();
+            }
+            // If user did not press pointer or center, report event not handled
+            else{
+                getParent().requestDisallowInterceptTouchEvent(false);
+                return false;
+            }
+            break;
+        case MotionEvent.ACTION_UP:
+            mUserIsMovingPointer = false;
+            mCenterHaloPaint.setAlpha(0x00);
 
-		return new float[] { x, y };
-	}
+            if (onColorSelectedListener != null && mCenterNewColor != oldSelectedListenerColor) {
+                onColorSelectedListener.onColorSelected(mCenterNewColor);
+                oldSelectedListenerColor = mCenterNewColor;
+            }
 
-	/**
-	 * Add a Saturation/Value bar to the color wheel.
-	 * 
-	 * @param bar The instance of the Saturation/Value bar.
-	 */
-	public void addSVBar(SVBar bar) {
-		mSVbar = bar;
-		// Give an instance of the color picker to the Saturation/Value bar.
-		mSVbar.setColorPicker(this);
-		mSVbar.setColor(mColor);
-	}
+            invalidate();
+            break;
+        case MotionEvent.ACTION_CANCEL:
+            if (onColorSelectedListener != null && mCenterNewColor != oldSelectedListenerColor) {
+                onColorSelectedListener.onColorSelected(mCenterNewColor);
+                oldSelectedListenerColor = mCenterNewColor;
+            }
+            break;
+        }
+        return true;
+    }
 
-	/**
-	 * Add a Opacity bar to the color wheel.
-	 * 
-	 * @param bar The instance of the Opacity bar.
-	 */
-	public void addOpacityBar(OpacityBar bar) {
-		mOpacityBar = bar;
-		// Give an instance of the color picker to the Opacity bar.
-		mOpacityBar.setColorPicker(this);
-		mOpacityBar.setColor(mColor);
-	}
+    /**
+     * Calculate the pointer's coordinates on the color wheel using the supplied
+     * angle.
+     *
+     * @param angle The position of the pointer expressed as angle (in rad).
+     *
+     * @return The coordinates of the pointer's center in our internal
+     *         coordinate system.
+     */
+    private float[] calculatePointerPosition(float angle) {
+        float x = (float) (mColorWheelRadius * Math.cos(angle));
+        float y = (float) (mColorWheelRadius * Math.sin(angle));
 
-	public void addSaturationBar(SaturationBar bar) {
-		mSaturationBar = bar;
-		mSaturationBar.setColorPicker(this);
-		mSaturationBar.setColor(mColor);
-	}
+        return new float[] { x, y };
+    }
 
-	public void addValueBar(ValueBar bar) {
-		mValueBar = bar;
-		mValueBar.setColorPicker(this);
-		mValueBar.setColor(mColor);
-	}
+    /**
+     * Add a Saturation/Value bar to the color wheel.
+     *
+     * @param bar The instance of the Saturation/Value bar.
+     */
+    public void addSVBar(SVBar bar) {
+        mSVbar = bar;
+        // Give an instance of the color picker to the Saturation/Value bar.
+        mSVbar.setColorPicker(this);
+        mSVbar.setColor(mColor);
+    }
 
-	/**
-	 * Change the color of the center which indicates the new color.
-	 * 
-	 * @param color int of the color.
-	 */
-	public void setNewCenterColor(int color) {
-		mCenterNewColor = color;
-		mCenterNewPaint.setColor(color);
-		if (mCenterOldColor == 0) {
-			mCenterOldColor = color;
-			mCenterOldPaint.setColor(color);
-		}
-		if (onColorChangedListener != null && color != oldChangedListenerColor ) {
-			onColorChangedListener.onColorChanged(color);
-			oldChangedListenerColor  = color;
-		}
-		invalidate();
-	}
+    /**
+     * Add a Opacity bar to the color wheel.
+     *
+     * @param bar The instance of the Opacity bar.
+     */
+    public void addOpacityBar(OpacityBar bar) {
+        mOpacityBar = bar;
+        // Give an instance of the color picker to the Opacity bar.
+        mOpacityBar.setColorPicker(this);
+        mOpacityBar.setColor(mColor);
+    }
 
-	/**
-	 * Change the color of the center which indicates the old color.
-	 * 
-	 * @param color int of the color.
-	 */
-	public void setOldCenterColor(int color) {
-		mCenterOldColor = color;
-		mCenterOldPaint.setColor(color);
-		invalidate();
-	}
+    public void addSaturationBar(SaturationBar bar) {
+        mSaturationBar = bar;
+        mSaturationBar.setColorPicker(this);
+        mSaturationBar.setColor(mColor);
+    }
 
-	public int getOldCenterColor() {
-		return mCenterOldColor;
-	}
-	
-	/**
-	 * Set whether the old color is to be shown in the center or not
-	 * 
-	 * @param show true if the old color is to be shown, false otherwise
-	 */
-	public void setShowOldCenterColor(boolean show) {
-		mShowCenterOldColor = show;
-		invalidate();
-	}
-	
-	public boolean getShowOldCenterColor() {
-		return mShowCenterOldColor;
-	}
+    public void addValueBar(ValueBar bar) {
+        mValueBar = bar;
+        mValueBar.setColorPicker(this);
+        mValueBar.setColor(mColor);
+    }
 
-	/**
-	 * Used to change the color of the {@code OpacityBar} used by the
-	 * {@code SVBar} if there is an change in color.
-	 * 
-	 * @param color int of the color used to change the opacity bar color.
-	 */
-	public void changeOpacityBarColor(int color) {
-		if (mOpacityBar != null) {
-			mOpacityBar.setColor(color);
-		}
-	}
+    /**
+     * Change the color of the center which indicates the new color.
+     *
+     * @param color int of the color.
+     */
+    public void setNewCenterColor(int color) {
+        mCenterNewColor = color;
+        mCenterNewPaint.setColor(color);
+        if (mCenterOldColor == 0) {
+            mCenterOldColor = color;
+            mCenterOldPaint.setColor(color);
+        }
+        if (onColorChangedListener != null && color != oldChangedListenerColor ) {
+            onColorChangedListener.onColorChanged(color);
+            oldChangedListenerColor  = color;
+        }
+        invalidate();
+    }
 
-	/**
-	 * Used to change the color of the {@code SaturationBar}.
-	 * 
-	 * @param color
-	 *            int of the color used to change the opacity bar color.
-	 */
-	public void changeSaturationBarColor(int color) {
-		if (mSaturationBar != null) {
-			mSaturationBar.setColor(color);
-		}
-	}
+    /**
+     * Change the color of the center which indicates the old color.
+     *
+     * @param color int of the color.
+     */
+    public void setOldCenterColor(int color) {
+        mCenterOldColor = color;
+        mCenterOldPaint.setColor(color);
+        invalidate();
+    }
 
-	/**
-	 * Used to change the color of the {@code ValueBar}.
-	 * 
-	 * @param color int of the color used to change the opacity bar color.
-	 */
-	public void changeValueBarColor(int color) {
-		if (mValueBar != null) {
-			mValueBar.setColor(color);
-		}
-	}
-	
-	/**
-	 * Checks if there is an {@code OpacityBar} connected.
-	 * 
-	 * @return true or false.
-	 */
-	public boolean hasOpacityBar(){
-		return mOpacityBar != null;
-	}
-	
-	/**
-	 * Checks if there is a {@code ValueBar} connected.
-	 * 
-	 * @return true or false.
-	 */
-	public boolean hasValueBar(){
-		return mValueBar != null;
-	}
-	
-	/**
-	 * Checks if there is a {@code SaturationBar} connected.
-	 * 
-	 * @return true or false.
-	 */
-	public boolean hasSaturationBar(){
-		return mSaturationBar != null;
-	}
-	
-	/**
-	 * Checks if there is a {@code SVBar} connected.
-	 * 
-	 * @return true or false.
-	 */
-	public boolean hasSVBar(){
-		return mSVbar != null;
-	}
+    public int getOldCenterColor() {
+        return mCenterOldColor;
+    }
 
-	@Override
-	protected Parcelable onSaveInstanceState() {
-		Parcelable superState = super.onSaveInstanceState();
+    /**
+     * Set whether the old color is to be shown in the center or not
+     *
+     * @param show true if the old color is to be shown, false otherwise
+     */
+    public void setShowOldCenterColor(boolean show) {
+        mShowCenterOldColor = show;
+        invalidate();
+    }
 
-		Bundle state = new Bundle();
-		state.putParcelable(STATE_PARENT, superState);
-		state.putFloat(STATE_ANGLE, mAngle);
-		state.putInt(STATE_OLD_COLOR, mCenterOldColor);
-		state.putBoolean(STATE_SHOW_OLD_COLOR, mShowCenterOldColor);
+    public boolean getShowOldCenterColor() {
+        return mShowCenterOldColor;
+    }
 
-		return state;
-	}
+    /**
+     * Used to change the color of the {@code OpacityBar} used by the
+     * {@code SVBar} if there is an change in color.
+     *
+     * @param color int of the color used to change the opacity bar color.
+     */
+    public void changeOpacityBarColor(int color) {
+        if (mOpacityBar != null) {
+            mOpacityBar.setColor(color);
+        }
+    }
 
-	@Override
-	protected void onRestoreInstanceState(Parcelable state) {
-		Bundle savedState = (Bundle) state;
+    /**
+     * Used to change the color of the {@code SaturationBar}.
+     *
+     * @param color
+     *            int of the color used to change the opacity bar color.
+     */
+    public void changeSaturationBarColor(int color) {
+        if (mSaturationBar != null) {
+            mSaturationBar.setColor(color);
+        }
+    }
 
-		Parcelable superState = savedState.getParcelable(STATE_PARENT);
-		super.onRestoreInstanceState(superState);
+    /**
+     * Used to change the color of the {@code ValueBar}.
+     *
+     * @param color int of the color used to change the opacity bar color.
+     */
+    public void changeValueBarColor(int color) {
+        if (mValueBar != null) {
+            mValueBar.setColor(color);
+        }
+    }
 
-		mAngle = savedState.getFloat(STATE_ANGLE);
-		setOldCenterColor(savedState.getInt(STATE_OLD_COLOR));
-		mShowCenterOldColor = savedState.getBoolean(STATE_SHOW_OLD_COLOR);
-		int currentColor = calculateColor(mAngle);
-		mPointerColor.setColor(currentColor);
-		setNewCenterColor(currentColor);
-	}
+    /**
+     * Checks if there is an {@code OpacityBar} connected.
+     *
+     * @return true or false.
+     */
+    public boolean hasOpacityBar(){
+        return mOpacityBar != null;
+    }
+
+    /**
+     * Checks if there is a {@code ValueBar} connected.
+     *
+     * @return true or false.
+     */
+    public boolean hasValueBar(){
+        return mValueBar != null;
+    }
+
+    /**
+     * Checks if there is a {@code SaturationBar} connected.
+     *
+     * @return true or false.
+     */
+    public boolean hasSaturationBar(){
+        return mSaturationBar != null;
+    }
+
+    /**
+     * Checks if there is a {@code SVBar} connected.
+     *
+     * @return true or false.
+     */
+    public boolean hasSVBar(){
+        return mSVbar != null;
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+
+        Bundle state = new Bundle();
+        state.putParcelable(STATE_PARENT, superState);
+        state.putFloat(STATE_ANGLE, mAngle);
+        state.putInt(STATE_OLD_COLOR, mCenterOldColor);
+        state.putBoolean(STATE_SHOW_OLD_COLOR, mShowCenterOldColor);
+
+        return state;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        Bundle savedState = (Bundle) state;
+
+        Parcelable superState = savedState.getParcelable(STATE_PARENT);
+        super.onRestoreInstanceState(superState);
+
+        mAngle = savedState.getFloat(STATE_ANGLE);
+        setOldCenterColor(savedState.getInt(STATE_OLD_COLOR));
+        mShowCenterOldColor = savedState.getBoolean(STATE_SHOW_OLD_COLOR);
+        int currentColor = calculateColor(mAngle);
+        mPointerColor.setColor(currentColor);
+        setNewCenterColor(currentColor);
+    }
 
     public void setTouchAnywhereOnColorWheelEnabled(boolean TouchAnywhereOnColorWheelEnabled){
             mTouchAnywhereOnColorWheelEnabled = TouchAnywhereOnColorWheelEnabled;
