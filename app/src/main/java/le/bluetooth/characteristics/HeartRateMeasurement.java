@@ -57,7 +57,7 @@ public class HeartRateMeasurement {
         }
     }
 
-   private boolean isHeartRateInUINT16(byte flags) {
+    private boolean isHeartRateInUINT16(byte flags) {
         return (flags & GattUtils.FIRST_BITMASK) != 0;
     }
 
